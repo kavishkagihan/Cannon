@@ -29,6 +29,8 @@ After you run cannon, you can create a payload file, which conains the payload t
 `create 9001`
 
 Payload will be saved in a file with the name of the 'SHELL_FILE' variable (defualt is cannon.shell)
+![image](https://user-images.githubusercontent.com/85458014/124819453-a7bdc700-df42-11eb-9158-a37c2c8b4638.png)
+
 
 
 2. Executing the payload
@@ -43,6 +45,7 @@ Then you can simply execute the shell on the victim machine
 Once you have executed the payload, you can check if you have the conenction from the paylaod.
 
 `list`
+![image](https://user-images.githubusercontent.com/85458014/124819508-b7d5a680-df42-11eb-8ea6-106123b5b64e.png)
 
 
 4. Interate with a connected host
@@ -58,6 +61,7 @@ You can simply disconnect an unwanted host with the 'disconnect'  command.The ho
 
 `disconnect 1`
 
+![image](https://user-images.githubusercontent.com/85458014/124819595-cf149400-df42-11eb-8def-ebb585a395fa.png)
 
 
 6. Start another listener
@@ -66,18 +70,23 @@ You also can start another listner and get conenctions through that port. The po
 
 `bind 9002`
 
+![image](https://user-images.githubusercontent.com/85458014/124819627-db005600-df42-11eb-9cca-36759508af4e.png)
+
 
 7. Stop a listener
 
 When you want to stop an active listener you can use the 'kill' command. As an argument, the port of the listener should be specified.
 
 `kill 9002`
+![image](https://user-images.githubusercontent.com/85458014/124819669-e6ec1800-df42-11eb-80c8-93a97573abe9.png)
+
 
 8. Check the statistics
 
-With the 'status' command you can list the current status such as the Internet status, Listeners IP and PORT, number of listenrs and the number of hosts connected.
+With the 'status' command you can list the current status such as the Internet status, Listeners IP and PORT, number of listeners and the number of hosts connected.
 
 `status`
+![image](https://user-images.githubusercontent.com/85458014/124819922-3a5e6600-df43-11eb-82f8-4f64cf31d670.png)
 
 
 
