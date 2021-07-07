@@ -1,7 +1,5 @@
 # Cannon
 
-![image](https://user-images.githubusercontent.com/85458014/124807053-bfda1a00-df33-11eb-9a56-6f3e38db2dab.png)
-
 Cannon is a post-exploitation framework fully developed in python3. Once you have access to the system, this will make your work much easier with all the functionalities that this tool possesses. You will be able to download and upload files, run pre-defined modules, harvest reverse shells, and many more. This version of Cannon mainly focuses on attacking Unix-based machines. Most of the utilities that this framework carries based on Unix-based systems. But some of the functions will still work in Windows systems as well.
 
 # Installation
@@ -93,6 +91,26 @@ With the 'status' command you can list the current status such as the Internet s
 `status`
 
 ![image](https://user-images.githubusercontent.com/85458014/124819922-3a5e6600-df43-11eb-82f8-4f64cf31d670.png)
+
+9. Shell access to the local machine
+
+While you are on the cannon framework, you can execute commands on your machine. When you want to go back to Cannon you can exit the shell with 'exit'
+
+`shell`
+
+![image](https://user-images.githubusercontent.com/85458014/124821076-a55c6c80-df44-11eb-8c1f-557148ea17ba.png)
+
+
+10. Exit Cannon
+
+You can simply exit this with the 'exit' command.
+
+`exit`
+
+Also if you are comfortable with using keyborad keys, you can use the Control key and the EXIT_KEY (default is 'j')  to exit as well. You change change it to your preference. 
+
+
+![image](https://user-images.githubusercontent.com/85458014/124821538-392e3880-df45-11eb-9230-ef781944f3b7.png)
 
 
 
