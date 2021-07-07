@@ -10,14 +10,15 @@ Cannon is a post-exploitation framework fully developed in python3. Once you hav
 
 # Setup
 
-Once you have this installed, you can run it with this,
+Once you have this installed, you can run it.
 
 `./cannon `
 
-This will start the listener on our loopback address with the default port. If you want to specify an IP address and a port, you can  specify it like this,
+This will start the listener on our loopback address with the default port. If you want to use a different IP and a port you can also specify them.
 
 `./cannon 192.168.1.102 4444`
 
 Then you can use the `help` command to see the help menu.
 
 # Usage
+
