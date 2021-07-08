@@ -27,7 +27,7 @@ Then you can use the `help` command to see the help menu.
 
 After you run cannon, you can create a payload file, which conains the payload to be executed in the victim machine. You have to specify the port which you are listening on. 
 
-`create 9001`
+`create 4444`
 
 Payload will be saved in a file with the name of the 'SHELL_FILE' variable (defualt is cannon.shell)
 ![image](https://user-images.githubusercontent.com/85458014/124819453-a7bdc700-df42-11eb-9158-a37c2c8b4638.png)
@@ -41,9 +41,9 @@ Then you can simply execute the shell on the victim machine
 `python3 cannon.shell`
 
 
-3. Cheking the conenctions
+3. Cheking the connections
 
-Once you have executed the payload, you can check if you have the conenction from the paylaod.
+Once you have executed the payload, you can check if you have got the connection back.
 
 `list`
 
@@ -57,9 +57,9 @@ You can interact with a connected host with the 'connect' command.The hosts numb
 `connect 1`
 
 
-5. Disconenct a host
+5. Disconnect a host
 
-You can simply disconnect an unwanted host with the 'disconnect'  command.The hosts number should be given as an argument. You can check the number of the host with 'list'
+You can simply disconnect an unwanted host with the 'disconnect'  command.The hosts number should be given as an argument.
 
 `disconnect 1`
 
@@ -68,14 +68,14 @@ You can simply disconnect an unwanted host with the 'disconnect'  command.The ho
 
 6. Start another listener
 
-You also can start another listner and get conenctions through that port. The port to start the listner on should be given as an argument.
+You also can bind another listeners while listening from this and get connections through that as well. The port to start the listener on should be given as an argument.
 
 `bind 9002`
 
 ![image](https://user-images.githubusercontent.com/85458014/124819627-db005600-df42-11eb-9cca-36759508af4e.png)
 
 
-7. Stop a listener
+7. Kill an active listener
 
 When you want to stop an active listener you can use the 'kill' command. As an argument, the port of the listener should be specified.
 
@@ -107,7 +107,7 @@ You can simply exit this with the 'exit' command.
 
 `exit`
 
-Also if you are comfortable with using keyborad keys, you can use the Control key and the EXIT_KEY (default is 'j')  to exit as well. You change change it to your preference. 
+Also if you are comfortable with using keyborad shortcuts, you can use the Control key and the EXIT_KEY (default is 'j')  to exit as well. You change change it to your preference. 
 
 
 ![image](https://user-images.githubusercontent.com/85458014/124821538-392e3880-df45-11eb-9230-ef781944f3b7.png)
