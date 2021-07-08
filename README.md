@@ -155,7 +155,7 @@ One of the useful features of this tool is that you can gain shell access to the
 
 Depending on the access you have it will show wheather you have user access or root access in the system.
 
-![image](https://user-images.githubusercontent.com/85458014/124915141-979bfb00-dfc7-11eb-8673-0b6f7649c784.png)
+![image](https://user-images.githubusercontent.com/85458014/124916053-9d461080-dfc8-11eb-8301-60f21512e2a6.png)
 
 (This is not a tty shell, so you won't be able to run any interactive commands such as sudo)
 
@@ -178,9 +178,19 @@ With the 'info' command you can get some basic information that may be helpful.
 ![image](https://user-images.githubusercontent.com/85458014/124915764-4b04ef80-dfc8-11eb-9e42-5e320e58d67e.png)
 
 
+5. Harvesting reverse shells
 
+Probably the bst and the most useful feature of this tool is that you can get a reverse shell back to you with the 'revshell' command. This takes inly one argument bing the port that you want to get the reverse shell to.
 
+`revshell 8899`
 
+![image](https://user-images.githubusercontent.com/85458014/124917220-ef3b6600-dfc9-11eb-8af5-431c0202df36.png)
+
+You have to start a listener in the port you specify. 
+
+![image](https://user-images.githubusercontent.com/85458014/124917569-5e18bf00-dfca-11eb-96df-00ba5a106f91.png)
+
+This is where the real power of this framework comes in. Imagine you are on a very unstable box and your reverse shell dies constantly. With this you just have to run this and you will have a shell back for you in no time.
 
 
 
