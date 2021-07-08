@@ -112,6 +112,37 @@ Also if you are comfortable with using keyborad shortcuts, you can use the Contr
 
 ![image](https://user-images.githubusercontent.com/85458014/124821538-392e3880-df45-11eb-9230-ef781944f3b7.png)
 
+# Interacting with the meterpreter instance
+
+After you connect to a host (with the 'connect' command) you can do certian things which will help you further with the exploitation process. You can use the `help` command to view the help menu.
+
+![image](https://user-images.githubusercontent.com/85458014/124867430-7b329b00-df94-11eb-958b-cf37aa929e65.png)
+
+1. Upload files
+
+You can upload files with the 'upload' command. This takes two arguments. First one being the source file that you want to upload. And then the destination path for the file to be uploaded. (This version of Cannon doesn't support uploading or downloading binary files. That feature will be added soon)
+
+`upload example_file /tmp/uploaded_file`
+
+![image](https://user-images.githubusercontent.com/85458014/124867749-0c097680-df95-11eb-8b76-c1490f9e127c.png)
+
+
+You can clarify that by looking at the uploaded file.
+
+![image](https://user-images.githubusercontent.com/85458014/124867820-29d6db80-df95-11eb-8290-bd74cdbe8892.png)
+
+
+2. Download files
+
+You can download files as well, This also takes two arguments, the path of file you want to download and the destination path to the file to be saved.
+
+`download /tmp/uploaded_file downloaded_file`
+
+![image](https://user-images.githubusercontent.com/85458014/124868243-de70fd00-df95-11eb-88b5-ff0295358be6.png)
+
+Again, you can clarify it by looking at the downloaded file.
+
+![image](https://user-images.githubusercontent.com/85458014/124868317-f9437180-df95-11eb-8022-1a4ca7a92172.png)
 
 
 
