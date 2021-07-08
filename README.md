@@ -112,7 +112,7 @@ Also if you are comfortable with using keyborad shortcuts, you can use the Contr
 
 ![image](https://user-images.githubusercontent.com/85458014/124821538-392e3880-df45-11eb-9230-ef781944f3b7.png)
 
-# Interacting with the meterpreter instance
+# Interacting with meterpreter instances
 
 After you connect to a host (with the 'connect' command) you can do certian things which will help you further with the exploitation process. You can use the `help` command to view the help menu.
 
@@ -144,6 +144,38 @@ Again, you can clarify it by looking at the downloaded file.
 
 ![image](https://user-images.githubusercontent.com/85458014/124868317-f9437180-df95-11eb-8022-1a4ca7a92172.png)
 
+
+3. Execute commands on the victim machine
+
+One of the useful features of this tool is that you can gain shell access to the victim machine.
+
+`channel`
+
+![image](https://user-images.githubusercontent.com/85458014/124915078-7dfab380-dfc7-11eb-9877-d8c2451aaae3.png)
+
+Depending on the access you have it will show wheather you have user access or root access in the system.
+
+![image](https://user-images.githubusercontent.com/85458014/124915141-979bfb00-dfc7-11eb-8673-0b6f7649c784.png)
+
+(This is not a tty shell, so you won't be able to run any interactive commands such as sudo)
+
+4. Basic information about the system
+
+With the 'info' command you can get some basic information that may be helpful. 
+
+`info -s` to get system information
+
+![image](https://user-images.githubusercontent.com/85458014/124915636-2577e600-dfc8-11eb-9122-cda5fe5d8caf.png)
+
+
+`info -m` to get memory information
+
+![image](https://user-images.githubusercontent.com/85458014/124915714-3c1e3d00-dfc8-11eb-9f35-0719d034838a.png)
+
+
+`info -a` to get all of them at once
+
+![image](https://user-images.githubusercontent.com/85458014/124915764-4b04ef80-dfc8-11eb-9e42-5e320e58d67e.png)
 
 
 
