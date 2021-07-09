@@ -29,5 +29,5 @@ These features will be added in the near future.
 
 Email - iamkavigihan@gmail.com
 
-Intagram - @_kavi.gihan
+Intagram - https://www.instagram.com/_kavi.gihan/
 
