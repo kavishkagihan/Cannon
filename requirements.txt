@@ -1,0 +1,7 @@
+readline
+pynput
+colored
+lib-platform
+signals
+threaded
+requests
