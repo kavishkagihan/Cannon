@@ -497,12 +497,12 @@ def send_files(connection,src_file,dst_file):
 
         r = ""
         if os.path.isfile(src_file):
-            OS = platform.uname().system
+            OS = os.name
 
-            if OS == 'Linux':
+            if OS.strip() == 'posix':
                 r = 'cat'
 
-            elif OS == 'Windows':
+            elif OS.strip() == 'nt':
                 r = 'type'
             
             lines = subprocess.run(f'{r} {src_file.strip()}',text=True,capture_output=True,shell=True)
