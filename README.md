@@ -14,7 +14,7 @@ Cannon is a post-exploitation framework fully developed in python3. Once you hav
 
 # Documentation
 
-View the documentation from https://kavigihan.medium.com/cannon-post-exploitation-framework-291d691d15c7?postPublishedType=initial
+View the documentation from https://kavigihan.medium.com/cannon-post-exploitation-framework-291d691d15c7
 
 # TODO
 
