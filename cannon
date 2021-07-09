@@ -11,7 +11,6 @@ import threading,platform
 import subprocess
 import sys
 import signal,time
-from pynput import keyboard
 import readline
 
 
