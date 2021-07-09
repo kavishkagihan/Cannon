@@ -6,7 +6,7 @@ Cannon is a post-exploitation framework fully developed in python3. Once you hav
 
 `git clone https://github.com/kavishkagihan/Cannon.git`
 
-`cd cannon`
+`cd Cannon`
 
 `pip3 install -r requirements.txt`
 
