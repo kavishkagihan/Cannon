@@ -19,7 +19,7 @@ View the documentation from https://kavigihan.medium.com/cannon-post-exploitatio
 # TODO
 
 This frameswork offers you a lot of features while missing a few.
-  1. Downloading and uploading binary files.                        (Done)
+  1. Downloading and uploading binary files.                        (Added)
   2. Executing interactive commands in the host's machine.
   3. Saving sessions.
   
