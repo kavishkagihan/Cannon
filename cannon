@@ -473,6 +473,7 @@ def send(c):
 
 
 def get_files(connection,src_file,dst_file):
+    make_dir_error = None
     try:
         print('\n[-] Downloading the file...')
         time.sleep(0.5)
@@ -488,6 +489,17 @@ def get_files(connection,src_file,dst_file):
 
                 lines += connection.recv(90240000).decode()
 
+
+            if dst_file is None:
+                print(f'[!] No output file specified, putting files to OUTPUT_DIR : {OUTPUT_DIR}')
+                dst_file = OUTPUT_DIR + '/' + src_file.split('/')[-1].strip()
+
+                if not os.path.isdir(OUTPUT_DIR):
+                    make_dir = subprocess.run(f'mkdir {OUTPUT_DIR.strip()}',shell=True,capture_output=True,text=True)
+                    if make_dir.stderr:
+                        print(red + f'[!] ERROR: {make_dir.stderr}')
+                        make_dir_error = True
+
             with open(dst_file,'wb') as f:
                 f.write(base64.b64decode(lines[:-3]))
 
@@ -498,8 +510,9 @@ def get_files(connection,src_file,dst_file):
 
 
     except Exception as e:
-        print(red + '[!] ERROR :',e,'\n')
-
+        if not make_dir_error:
+            print(red + '[!] ERROR :',e,'\n')
+            
 
 def send_files(connection,src_file,dst_file):
     try:    
