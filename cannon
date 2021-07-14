@@ -906,7 +906,7 @@ def inter():
                     create_shell_script(ip, port, CLIENT_SCRIPT_PATH)
 
                 except Exception as e:
-                    print(red + '[!] Invalid syntax: (create [IP] [PORT])\n')
+                    print(red + '[!] Invalid syntax: (create [PORT])\n')
 
 
             elif read[:7] == "connect":
