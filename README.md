@@ -25,7 +25,7 @@ These features will be added in the near future.
 
 # Newly added features
 
-1. Downloading binary files.  -- (5/12/2021)
+1. Downloading binary files.  -- (7/15/2021)
 2. Download files to a specified directory [OUTPUT_DIR] -- (7/12/2021)
 
   
